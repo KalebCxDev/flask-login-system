@@ -10,9 +10,9 @@
         <h1>Mi Aplicación de Postulantes</h1>
         <nav>
             <a href="{{ url_for('index') }}">Registro</a>
-            <a href="{{ url_for('index') }}">Login</a> <!-- Cambiar a login cuando exista la ruta -->
-            <a href="{{ url_for('index') }}">Dashboard</a> <!-- Cambiar a dashboard cuando exista la ruta -->
-        </nav>
+            <a href="{{ url_for('index') }}">Login</a>
+            <a href="{{ url_for('index') }}">Dashboard</a>
+</nav>
     </header>
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
