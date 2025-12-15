@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Mi Aplicación{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Mi Aplicación de Postulantes</h1>
+        <nav>
+            <a href="{{ url_for('index') }}">Registro</a>
+            <a href="{{ url_for('index') }}">Login</a>
+            <a href="{{ url_for('index') }}">Dashboard</a>
+</nav>
+    </header>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy;</p>
+    </footer>
+    <script src="{{ url_for('static', filename='js/validations.js') }}"></script>
+</body>
+</html>

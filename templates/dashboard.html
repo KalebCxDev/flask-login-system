@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2>Dashboard del Postulante</h2>
+
+<p>Bienvenido al área privada del sistema.</p>
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>DNI</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Datos dinámicos con Jinja2 -->
+        {% for postulante in postulantes %}
+        <tr>
+            <td>{{ postulante.nombres }} {{ postulante.apellidos }}</td>
+            <td>{{ postulante.correo }}</td>
+            <td>{{ postulante.dni }}</td>
+            <td>{{ postulante.estado }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
