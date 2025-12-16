@@ -1,5 +1,5 @@
 venv312/
-instance/
+instance/*.db
 __pycache__/
 *.pyc
 uploads/
