@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Archivos{% endblock %}
+
+{% block content %}
+<h2>Mis Archivos</h2>
+
+<h3>Subir nuevo archivo</h3>
+<form method="post" enctype="multipart/form-data" action="#">
+    <input type="file" name="archivo" required><br><br>
+    <button type="submit">Subir archivo</button>
+</form>
+
+<hr>
+
+<h3>Archivos subidos</h3>
+
+{% if archivos %}
+<ul>
+    {% for archivo in archivos %}
+        <li>
+            {{ archivo.nombre_original }}
+            ({{ archivo.extension }})
+        </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No has subido archivos aún.</p>
+{% endif %}
+
+{% endblock %}
