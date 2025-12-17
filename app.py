@@ -1,160 +1,207 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, Usuario, Postulante, Archivo
 from datetime import datetime
 import os
+import uuid
 
 app = Flask(__name__)
 app.secret_key = 'mi-clave-secreta'
-
-# Configuración básica
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(BASE_DIR, "instance", "app.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-CARPETA_ARCHIVOS = 'uploads'
-
+CARPETA_ARCHIVOS = os.path.join(BASE_DIR, 'uploads')
+EXTENSIONES_PERMITIDAS = {'pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx', 'xlsx', 'txt', 'gif', 'webp'}
+TAMANO_MAXIMO = 5 * 1024 * 1024
 db.init_app(app)
+os.makedirs(os.path.join(BASE_DIR, 'instance'), exist_ok=True)
 os.makedirs(CARPETA_ARCHIVOS, exist_ok=True)
 
-# ===== FUNCIONES AUXILIARES =====
 def archivo_valido(nombre):
-    return '.' in nombre and nombre.rsplit('.', 1)[1].lower() in {'pdf', 'png', 'jpg', 'jpeg'}
-
+    return '.' in nombre and nombre.rsplit('.', 1)[1].lower() in EXTENSIONES_PERMITIDAS
+def validar_dni(dni):
+    return len(dni) == 8 and dni.isdigit()
 def usuario_autenticado():
     return 'user_id' in session
+def obtener_postulante():
+    return Postulante.query.filter_by(usuario_id=session['user_id']).first() if usuario_autenticado() else None
+def obtener_archivo_usuario(file_id):
+    return Archivo.query.filter_by(id=file_id, usuario_id=session['user_id']).first() if usuario_autenticado() else None
 
-# ===== RUTAS PÚBLICAS =====
 @app.route('/')
 def index():
     return render_template('register.html')
 
 @app.route('/postular', methods=['POST'])
 def postular():
-    # Datos básicos
-    nombres = request.form['nombres']
-    apellidos = request.form['apellidos']
-    fecha_nac = request.form['fecha_nacimiento']
-    correo = request.form['correo']
-    dni = request.form['dni']
-    password = request.form['password']
-    
-    # Validaciones básicas
-    if Usuario.query.filter_by(email=correo).first():
-        flash('Correo ya registrado', 'error')
+    nombres = request.form.get('nombres', '').strip()
+    apellidos = request.form.get('apellidos', '').strip()
+    fecha_nac = request.form.get('fecha_nacimiento')
+    correo = request.form.get('correo', '').strip().lower()
+    dni = request.form.get('dni', '').strip()
+    password = request.form.get('password', '')
+    password_confirm = request.form.get('password_confirm', '')
+    if not all([nombres, apellidos, fecha_nac, correo, dni, password]):
+        flash('Todos los campos son obligatorios', 'error')
         return redirect(url_for('index'))
-    
-    # Crear usuario
-    nuevo_usuario = Usuario(
-        email=correo,
-        password_hash=generate_password_hash(password)
-    )
-    db.session.add(nuevo_usuario)
-    db.session.flush()
-    
-    # Crear postulante
-    nuevo_postulante = Postulante(
-        usuario_id=nuevo_usuario.id,
-        nombres=nombres,
-        apellidos=apellidos,
-        fecha_nacimiento=datetime.strptime(fecha_nac, '%Y-%m-%d').date(),
-        dni=dni,
-        estado='pendiente'
-    )
-    db.session.add(nuevo_postulante)
-    
-    # Subir archivo si existe
+    if password != password_confirm:
+        flash('Las contraseñas no coinciden', 'error')
+        return redirect(url_for('index'))
+    if not validar_dni(dni):
+        flash('El DNI debe tener 8 dígitos', 'error')
+        return redirect(url_for('index'))
+    if Usuario.query.filter_by(email=correo).first():
+        flash('El correo ya está registrado', 'error')
+        return redirect(url_for('index'))
     archivo = request.files.get('archivo_de_identidad')
-    if archivo and archivo_valido(archivo.filename):
-        nombre_unico = f"{correo}_{archivo.filename}"
-        ruta = os.path.join(CARPETA_ARCHIVOS, nombre_unico)
-        archivo.save(ruta)
-        
-        nuevo_archivo = Archivo(
-            usuario_id=nuevo_usuario.id,
-            nombre_original=archivo.filename,
-            nombre_guardado=nombre_unico,
-            ruta=ruta
-        )
-        db.session.add(nuevo_archivo)
-    
-    db.session.commit()
-    flash('Registro exitoso', 'success')
-    return redirect(url_for('login'))
+    try:
+        nuevo_usuario = Usuario(email=correo,password_hash=generate_password_hash(password),tipo='postulante')
+        db.session.add(nuevo_usuario)
+        db.session.flush()
+        nuevo_postulante = Postulante(usuario_id=nuevo_usuario.id,nombres=nombres,apellidos=apellidos,
+            fecha_nacimiento=datetime.strptime(fecha_nac, '%Y-%m-%d').date(),dni=dni,estado='pendiente')
+        db.session.add(nuevo_postulante)
+        if archivo and archivo.filename and archivo_valido(archivo.filename):
+            ext = archivo.filename.rsplit('.', 1)[1].lower()
+            nombre_unico = f"{uuid.uuid4()}.{ext}"
+            ruta = os.path.join(CARPETA_ARCHIVOS, nombre_unico)
+            archivo.save(ruta)
+            tamano = os.path.getsize(ruta)
+            if tamano <= TAMANO_MAXIMO:
+                nuevo_archivo = Archivo(usuario_id=nuevo_usuario.id,nombre_original=archivo.filename,
+                    nombre_guardado=nombre_unico,extension=ext,mime_type='application/octet-stream',ruta=ruta,tamano=tamano)
+                db.session.add(nuevo_archivo)
+        db.session.commit()
+        flash('Registro exitoso. Usa el código 123456 para verificar', 'success')
+        session['correo_verificar'] = correo
+        return redirect(url_for('verify'))
+    except Exception as e:
+        db.session.rollback()
+        flash('Error en el registro', 'error')
+        return redirect(url_for('index'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        correo = request.form['correo']
-        password = request.form['password']
-        
+        correo = request.form.get('correo', '').strip().lower()
+        password = request.form.get('password', '')
         usuario = Usuario.query.filter_by(email=correo).first()
-        
-        if usuario and check_password_hash(usuario.password_hash, password):
-            session['user_id'] = usuario.id
-            flash('Bienvenido', 'success')
-            return redirect(url_for('dashboard'))
-        else:
-            flash('Credenciales incorrectas', 'error')
-    
+        if not usuario or not check_password_hash(usuario.password_hash, password):
+            flash('Correo o contraseña incorrectos', 'error')
+            return render_template('login.html')
+        session['user_id'] = usuario.id
+        session['email'] = usuario.email
+        flash('Bienvenido!', 'success')
+        return redirect(url_for('dashboard'))
     return render_template('login.html')
+
+@app.route('/verify', methods=['GET', 'POST'])
+def verify():
+    if request.method == 'POST':
+        if request.form.get('codigo') == '123456':
+            session.pop('correo_verificar', None)
+            flash('Correo verificado! Ya puedes iniciar sesión', 'success')
+            return redirect(url_for('login'))
+        flash('Código incorrecto', 'error')
+    return render_template('verify.html')
 
 @app.route('/logout')
 def logout():
     session.clear()
+    flash('Sesión cerrada', 'success')
     return redirect(url_for('login'))
 
-# ===== RUTAS PRIVADAS =====
 @app.route('/dashboard')
 def dashboard():
     if not usuario_autenticado():
         return redirect(url_for('login'))
-    
-    postulante = Postulante.query.filter_by(usuario_id=session['user_id']).first()
-    estado = postulante.estado if postulante else 'pendiente'
-    
-    return render_template('dashboard.html', estado=estado)
+    postulante = obtener_postulante()
+    return render_template('dashboard.html', estado=postulante.estado if postulante else 'pendiente')
 
 @app.route('/perfil')
 def perfil():
     if not usuario_autenticado():
         return redirect(url_for('login'))
-    
     usuario = Usuario.query.get(session['user_id'])
-    postulante = Postulante.query.filter_by(usuario_id=session['user_id']).first()
-    
-    return render_template('profile.html', usuario=usuario, postulante=postulante)
+    postulante = obtener_postulante()
+    datos = {'email': usuario.email,'nombres': postulante.nombres if postulante else '','apellidos': postulante.apellidos if postulante else '','dni': postulante.dni if postulante else ''}
+    return render_template('profile.html', usuario=datos)
+
+@app.route('/perfil/editar', methods=['POST'])
+def editar_perfil():
+    if not usuario_autenticado():
+        return redirect(url_for('login'))
+    nombres = request.form.get('nombres', '').strip()
+    apellidos = request.form.get('apellidos', '').strip()
+    dni = request.form.get('dni', '').strip()
+    if not validar_dni(dni):
+        flash('El DNI debe tener 8 dígitos', 'error')
+        return redirect(url_for('perfil'))
+    postulante = obtener_postulante()
+    postulante.nombres = nombres
+    postulante.apellidos = apellidos
+    postulante.dni = dni
+    db.session.commit()
+    flash('Perfil actualizado', 'success')
+    return redirect(url_for('perfil'))
 
 @app.route('/mis_archivos')
 def mis_archivos():
     if not usuario_autenticado():
         return redirect(url_for('login'))
-    
-    archivos = Archivo.query.filter_by(usuario_id=session['user_id']).all()
+    archivos = Archivo.query.filter_by(usuario_id=session['user_id']).order_by(Archivo.fecha_subida.desc()).all()
     return render_template('files.html', archivos=archivos)
 
 @app.route('/subir_archivo', methods=['POST'])
 def subir_archivo():
     if not usuario_autenticado():
         return redirect(url_for('login'))
-    
-    archivo = request.files['archivo']
-    if archivo and archivo_valido(archivo.filename):
-        nombre_unico = f"{session['user_id']}_{archivo.filename}"
-        ruta = os.path.join(CARPETA_ARCHIVOS, nombre_unico)
-        archivo.save(ruta)
-        
-        nuevo_archivo = Archivo(
-            usuario_id=session['user_id'],
-            nombre_original=archivo.filename,
-            nombre_guardado=nombre_unico,
-            ruta=ruta
-        )
-        db.session.add(nuevo_archivo)
-        db.session.commit()
-        flash('Archivo subido', 'success')
-    
+    archivo = request.files.get('archivo')
+    if not archivo or not archivo.filename:
+        flash('No seleccionaste ningún archivo', 'error')
+        return redirect(url_for('mis_archivos'))
+    if not archivo_valido(archivo.filename):
+        flash('Tipo de archivo no permitido', 'error')
+        return redirect(url_for('mis_archivos'))
+    ext = archivo.filename.rsplit('.', 1)[1].lower()
+    nombre_unico = f"{uuid.uuid4()}.{ext}"
+    ruta = os.path.join(CARPETA_ARCHIVOS, nombre_unico)
+    archivo.save(ruta)
+    tamano = os.path.getsize(ruta)
+    if tamano > TAMANO_MAXIMO:
+        os.remove(ruta)
+        flash('El archivo es muy grande (máximo 5MB)', 'error')
+        return redirect(url_for('mis_archivos'))
+    nuevo_archivo = Archivo(usuario_id=session['user_id'],nombre_original=archivo.filename,
+        nombre_guardado=nombre_unico,extension=ext,mime_type='application/octet-stream',ruta=ruta,tamano=tamano)
+    db.session.add(nuevo_archivo)
+    db.session.commit()
+    flash('Archivo subido correctamente', 'success')
     return redirect(url_for('mis_archivos'))
 
-# Crear tablas al inicio
+@app.route('/archivo/<int:file_id>')
+def descargar_archivo(file_id):
+    if not usuario_autenticado():
+        return redirect(url_for('login'))
+    archivo = obtener_archivo_usuario(file_id)
+    if not archivo:
+        flash('Archivo no encontrado', 'error')
+        return redirect(url_for('mis_archivos'))
+    return send_file(archivo.ruta, as_attachment=True, download_name=archivo.nombre_original)
+
+@app.route('/archivo/<int:file_id>/eliminar', methods=['POST'])
+def eliminar_archivo(file_id):
+    if not usuario_autenticado():
+        return redirect(url_for('login'))
+    archivo = obtener_archivo_usuario(file_id)
+    if archivo:
+        if os.path.exists(archivo.ruta):
+            os.remove(archivo.ruta)
+        db.session.delete(archivo)
+        db.session.commit()
+        flash('Archivo eliminado', 'success')
+    return redirect(url_for('mis_archivos'))
+
 with app.app_context():
     db.create_all()
 
