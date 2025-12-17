@@ -5,21 +5,21 @@
 {% block content %}
 <h2>Mi Perfil</h2>
 
-<form method="post" action="/perfil/editar">
-    <label>Correo:</label>
-    <input type="email" value="{{ usuario.email }}" readonly><br><br>
+<form method="post" action="{{ url_for('editar_perfil') }}">
+    <label for="email">Correo (no editable):</label>
+    <input type="email" id="email" name="email" value="{{ usuario.email if usuario else '' }}" readonly disabled><br><br>
 
-    <label>Nombres:</label>
-    <input type="text" name="nombres" value="{{ usuario.nombres }}" required><br><br>
+    <label for="nombres">Nombres:</label>
+    <input type="text" id="nombres" name="nombres" value="{{ usuario.nombres if usuario else '' }}" required><br><br>
 
-    <label>Apellidos:</label>
-    <input type="text" name="apellidos" value="{{ usuario.apellidos }}" required><br><br>
+    <label for="apellidos">Apellidos:</label>
+    <input type="text" id="apellidos" name="apellidos" value="{{ usuario.apellidos if usuario else '' }}" required><br><br>
 
-    <label>DNI:</label>
-    <input type="text" name="dni" value="{{ usuario.dni }}" required><br><br>
+    <label for="dni">DNI:</label>
+    <input type="text" id="dni" name="dni" value="{{ usuario.dni if usuario else '' }}" required maxlength="8"><br><br>
 
-    <button type="submit">Guardar</button>
+    <button type="submit">Guardar cambios</button>
 </form>
 
-<p><a href="/dashboard">Volver</a></p>
+<p><a href="{{ url_for('dashboard') }}">← Volver al Dashboard</a></p>
 {% endblock %}

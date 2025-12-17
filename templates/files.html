@@ -5,10 +5,26 @@
 {% block content %}
 <h2>Mis Archivos</h2>
 
-<h3>Subir archivo</h3>
-<form method="post" enctype="multipart/form-data" action="/subir_archivo">
-    <input type="file" name="archivo" required><br><br>
-    <button type="submit">Subir</button>
+<h3>Subir nuevo archivo</h3>
+<form method="post" enctype="multipart/form-data" action="{{ url_for('subir_archivo') }}" class="upload-form" id="uploadForm">
+    <div class="file-upload-area">
+        <div class="file-drop-zone" id="dropZone">
+            <p>Arrastra y suelta tu archivo aquí</p>
+            <p>o</p>
+            <p><span class="browse-link">haz clic para seleccionar</span></p>
+            <p>Tamaño máximo: 10MB</p>
+            <p>Formatos permitidos: PDF, JPG, PNG, DOC, DOCX, TXT</p>
+        </div>
+        
+        <input type="file" name="archivo" id="archivoInput" class="file-input-hidden" required accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt">
+        
+        <div class="file-preview" id="filePreview">
+            <p class="file-name" id="fileName"></p>
+            <p class="file-size" id="fileSize"></p>
+        </div>
+        
+        <button type="submit" class="upload-button">Subir archivo</button>
+    </div>
 </form>
 
 <hr>
@@ -16,28 +32,37 @@
 <h3>Archivos subidos</h3>
 
 {% if archivos %}
-<table border="1">
-    <tr>
-        <th>Nombre</th>
-        <th>Fecha</th>
-        <th>Acciones</th>
-    </tr>
-    {% for archivo in archivos %}
-    <tr>
-        <td>{{ archivo.nombre_original }}</td>
-        <td>{{ archivo.fecha_subida.strftime('%d/%m/%Y') }}</td>
-        <td>
-            <a href="/archivo/{{ archivo.id }}">Descargar</a>
-            <form method="post" action="/archivo/{{ archivo.id }}/eliminar">
-                <button type="submit">Eliminar</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Extensión</th>
+            <th>Tamaño</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for archivo in archivos %}
+            <tr>
+                <td>{{ archivo.nombre_original }}</td>
+                <td>{{ archivo.extension }}</td>
+                <td>{{ (archivo.tamano / 1024)|round(2) }} KB</td>
+                <td>{{ archivo.fecha_subida.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>
+                    <a href="{{ url_for('descargar_archivo', file_id=archivo.id) }}">Descargar</a>
+                    <form method="post" action="{{ url_for('eliminar_archivo', file_id=archivo.id) }}" style="display: inline;">
+                        <button type="submit" onclick="return confirm('¿Eliminar este archivo?')">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
 </table>
 {% else %}
-<p>No hay archivos.</p>
+<p>No has subido archivos aún.</p>
 {% endif %}
 
-<p><a href="/dashboard">Volver</a></p>
+<p><a href="{{ url_for('dashboard') }}">← Volver al Dashboard</a></p>
+
 {% endblock %}

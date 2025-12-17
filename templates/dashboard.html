@@ -3,13 +3,16 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h2>Panel de Control</h2>
+<h2>Dashboard del Usuario</h2>
 
-<p>Estado: {{ estado }}</p>
+<p><strong>Estado de postulación:</strong> {{ estado if estado else 'Pendiente' }}</p>
 
-<ul>
-    <li><a href="/perfil">Ver mi perfil</a></li>
-    <li><a href="/mis_archivos">Ver mis archivos</a></li>
-    <li><a href="/logout">Cerrar sesión</a></li>
-</ul>
+<nav>
+    <ul>
+        <li><a href="{{ url_for('perfil') }}">Mi perfil</a></li>
+        <li><a href="{{ url_for('mis_archivos') }}">Mis archivos</a></li>
+        <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
+    </ul>
+</nav>
+
 {% endblock %}
