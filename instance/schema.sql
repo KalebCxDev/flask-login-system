@@ -1,6 +1,8 @@
 PRAGMA foreign_keys = ON;
 
-
+-- =========================
+-- TABLA USUARIOS
+-- =========================
 CREATE TABLE IF NOT EXISTS usuarios (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT NOT NULL UNIQUE,
@@ -10,20 +12,27 @@ CREATE TABLE IF NOT EXISTS usuarios (
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-
+-- =========================
+-- TABLA POSTULANTES
+-- =========================
 CREATE TABLE IF NOT EXISTS postulantes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER NOT NULL UNIQUE,
     nombres TEXT NOT NULL,
     apellidos TEXT NOT NULL,
     fecha_nacimiento DATE NOT NULL,
-    correo TEXT NOT NULL UNIQUE,
-    dni TEXT,
+    dni TEXT NOT NULL,
     estado TEXT DEFAULT 'pendiente'
         CHECK (estado IN ('pendiente', 'aprobado', 'rechazado')),
-    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id)
+        REFERENCES usuarios(id)
+        ON DELETE CASCADE
 );
 
-
+-- =========================
+-- TABLA ARCHIVOS
+-- =========================
 CREATE TABLE IF NOT EXISTS archivos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     usuario_id INTEGER NOT NULL,
@@ -44,12 +53,11 @@ CREATE TABLE IF NOT EXISTS archivos (
         ON DELETE CASCADE
 );
 
-
+-- =========================
+-- ÍNDICES
+-- =========================
 CREATE UNIQUE INDEX IF NOT EXISTS idx_usuarios_email
 ON usuarios(email);
-
-CREATE UNIQUE INDEX IF NOT EXISTS idx_postulantes_correo
-ON postulantes(correo);
 
 CREATE INDEX IF NOT EXISTS idx_postulantes_estado
 ON postulantes(estado);
