@@ -5,28 +5,30 @@
 {% block content %}
 <h2>Registro de Postulante</h2>
 
-<form action="{{ url_for('postular') }}" method="post">
-    <label for="nombres">Nombres:</label>
-    <input type="text" id="nombres" name="nombres" required>
+<form action="/postular" method="post" enctype="multipart/form-data">
+    <label>Nombres:</label>
+    <input type="text" name="nombres" required><br><br>
 
-    <label for="apellidos">Apellidos:</label>
-    <input type="text" id="apellidos" name="apellidos" required>
+    <label>Apellidos:</label>
+    <input type="text" name="apellidos" required><br><br>
 
-    <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+    <label>Fecha de Nacimiento:</label>
+    <input type="date" name="fecha_nacimiento" required><br><br>
 
-    <label for="correo">Correo:</label>
-    <input type="email" id="correo" name="correo" required>
+    <label>Correo:</label>
+    <input type="email" name="correo" required><br><br>
 
-    <label for="dni">DNI:</label>
-    <input type="text" id="dni" name="dni" required>
+    <label>DNI:</label>
+    <input type="text" name="dni" required><br><br>
 
-    <label for="password">Contraseña:</label>
-    <input type="password" id="password" name="password" required>
+    <label>Contraseña:</label>
+    <input type="password" name="password" required><br><br>
 
-    <label for="password_confirm">Confirmar contraseña:</label>
-    <input type="password" id="password_confirm" name="password_confirm" required>
+    <label>Documento de identidad:</label>
+    <input type="file" name="archivo_de_identidad"><br><br>
 
-    <button type="submit">Postular</button>
+    <button type="submit">Registrarse</button>
 </form>
+
+<p>¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a></p>
 {% endblock %}

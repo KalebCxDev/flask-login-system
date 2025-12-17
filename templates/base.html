@@ -2,34 +2,42 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Mi Aplicación{% endblock %}</title>
+    <title>{% block title %}Sistema de Postulación{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <header>
-        <h1>Mi Aplicación de Postulantes</h1>
+        <h1>Sistema de Postulación</h1>
         <nav>
-          <a href="{{ url_for('index') }}">Registro</a>
-          <a href="{{ url_for('login') }}">Login</a>
-          <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            {% if session.user_id %}
+                <a href="/dashboard">Dashboard</a>
+                <a href="/perfil">Perfil</a>
+                <a href="/mis_archivos">Archivos</a>
+                <a href="/logout">Salir</a>
+            {% else %}
+                <a href="/">Registro</a>
+                <a href="/login">Login</a>
+            {% endif %}
         </nav>
     </header>
+    
     {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <ul>
-          {% for category, message in messages %}
-            <li class="{{ category }}">{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
+        {% if messages %}
+            <div>
+                {% for category, message in messages %}
+                    <div>{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
     {% endwith %}
+    
     <main>
         {% block content %}
         {% endblock %}
     </main>
+    
     <footer>
-        <p>&copy;</p>
+        <p>&copy; 2024 Sistema de Postulación</p>
     </footer>
-    <script src="{{ url_for('static', filename='js/validations.js') }}"></script>
 </body>
 </html>
