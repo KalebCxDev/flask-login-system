@@ -4,21 +4,28 @@
 
 {% block content %}
 <h2>Registro de Postulante</h2>
+
 <form action="{{ url_for('postular') }}" method="post">
     <label for="nombres">Nombres:</label>
-    <input type="text" id="nombres" name="nombres" required><br><br>
+    <input type="text" id="nombres" name="nombres" required>
 
     <label for="apellidos">Apellidos:</label>
-    <input type="text" id="apellidos" name="apellidos" required><br><br>
+    <input type="text" id="apellidos" name="apellidos" required>
 
     <label for="fecha_nacimiento">Fecha de Nacimiento:</label>
-    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required><br><br>
+    <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
 
     <label for="correo">Correo:</label>
-    <input type="email" id="correo" name="correo" required><br><br>
+    <input type="email" id="correo" name="correo" required>
 
     <label for="dni">DNI:</label>
-    <input type="text" id="dni" name="dni"><br><br>
+    <input type="text" id="dni" name="dni" required>
+
+    <label for="password">Contraseña:</label>
+    <input type="password" id="password" name="password" required>
+
+    <label for="password_confirm">Confirmar contraseña:</label>
+    <input type="password" id="password_confirm" name="password_confirm" required>
 
     <button type="submit">Postular</button>
 </form>
