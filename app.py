@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 import sqlite3
 import os
 
-app = Flask(__name__)
+app = Flask(__name__) #Oigan por que esto debe ser si o si "__name__"?
 app.secret_key = 'clave-secreta'
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -38,12 +38,8 @@ def postular():
         conn.commit()
         flash('Postulación registrada correctamente', 'success')
 
-    except sqlite3.IntegrityError:
-        flash('El correo ya está registrado', 'error')
-
-    finally:
-        conn.close()
-
+    except sqlite3.IntegrityError: flash('El correo ya está registrado', 'error')
+    finally: conn.close()
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
