@@ -3,29 +3,16 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h2>Dashboard del Postulante</h2>
+<h2>Dashboard del Usuario</h2>
 
-<p>Bienvenido al área privada del sistema.</p>
-<table>
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>DNI</th>
-            <th>Estado</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Datos dinámicos con Jinja2 -->
-        {% for postulante in postulantes %}
-        <tr>
-            <td>{{ postulante.nombres }} {{ postulante.apellidos }}</td>
-            <td>{{ postulante.correo }}</td>
-            <td>{{ postulante.dni }}</td>
-            <td>{{ postulante.estado }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<p><strong>Estado de postulación:</strong> {{ estado if estado else 'Pendiente' }}</p>
+
+<nav>
+    <ul>
+        <li><a href="{{ url_for('perfil') }}">Mi perfil</a></li>
+        <li><a href="{{ url_for('mis_archivos') }}">Mis archivos</a></li>
+        <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
+    </ul>
+</nav>
 
 {% endblock %}

@@ -9,10 +9,10 @@
     <header>
         <h1>Mi Aplicación de Postulantes</h1>
         <nav>
-            <a href="{{ url_for('index') }}">Registro</a>
-            <a href="{{ url_for('index') }}">Login</a>
-            <a href="{{ url_for('index') }}">Dashboard</a>
-</nav>
+          <a href="{{ url_for('index') }}">Registro</a>
+          <a href="{{ url_for('login') }}">Login</a>
+          <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        </nav>
     </header>
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
