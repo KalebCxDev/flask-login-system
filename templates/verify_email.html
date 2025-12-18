@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<body style="
+    margin:0;
+    padding:20px;
+    background-color:#f2f4f7;
+    font-family: Arial, Helvetica, sans-serif;
+    color:#333;
+">
+    <div style="
+        max-width:520px;
+        margin:auto;
+        background-color:#ffffff;
+        border-radius:6px;
+        padding:24px;
+        border:1px solid #e5e7eb;
+    ">
+        <h2 style="
+            margin-top:0;
+            color:#1f3a5f;
+            font-size:20px;
+            font-weight:600;
+        ">
+            Verificación de correo
+        </h2>
+        <p style="font-size:14px; line-height:1.6;">
+            Estimado/a <strong>{{ nombres }}</strong>,
+        </p>
+        <p style="font-size:14px; line-height:1.6;">
+            Gracias por registrarse en <strong>App Iestpoxapampa</strong>.
+            Para completar su registro, utilice el siguiente código de verificación:
+        </p>
+        <div style="
+            margin:20px 0;
+            padding:14px;
+            text-align:center;
+            font-size:22px;
+            font-weight:700;
+            letter-spacing:3px;
+            color:#0a58ca;
+            background-color:#f0f6ff;
+            border-radius:4px;
+            border:1px solid #d0e2ff;
+        ">
+            {{ codigo }}
+        </div>
+        <p style="font-size:13px; color:#555;">
+            Este código es válido por un tiempo limitado.
+        </p>
+        <hr style="border:none; border-top:1px solid #e5e7eb; margin:20px 0;">
+        <p style="font-size:12px; color:#777; margin:0;">
+            © 2025 <strong>App Iestpoxapampa</strong><br>
+            App Instituto Superior Tecnico Oxapampa
+        </p>
+    </div>
+</body>
+</html>

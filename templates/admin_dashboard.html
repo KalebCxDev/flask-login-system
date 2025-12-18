@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Panel de Administración{% endblock %}
+
+{% block content %}
+<div style="margin: 20px 0;">
+    <h2>Panel de Administración IESTPO</h2>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 20px 0;">
+        <div style="background: #87c1ff; color: white; border-radius: 6px; padding: 20px;">
+            <h3 style="margin-top: 0;">Usuarios Registrados</h3>
+            <h2 style="font-size: 2.5em; margin: 10px 0;">{{ total_usuarios }}</h2>
+            <a href="{{ url_for('admin_usuarios') }}" style="color: white; text-decoration: none;">Ver detalles →</a>
+        </div>
+        
+        <div style="background: #afffc2; color: white; border-radius: 6px; padding: 20px;">
+            <h3 style="margin-top: 0;">Archivos Subidos</h3>
+            <h2 style="font-size: 2.5em; margin: 10px 0;">{{ total_archivos }}</h2>
+            <a href="{{ url_for('admin_archivos') }}" style="color: white; text-decoration: none;">Ver archivos →</a>
+        </div>
+        
+        <div style="background: #ffebad; color: #212529; border-radius: 6px; padding: 20px;">
+            <h3 style="margin-top: 0;">Postulaciones Pendientes</h3>
+            <h2 style="font-size: 2.5em; margin: 10px 0;">{{ postulantes_pendientes }}</h2>
+            <a href="{{ url_for('admin_usuarios') }}" style="color: #212529; text-decoration: none;">Revisar →</a>
+        </div>
+    </div>
+    
+    <div style="background: #fff; border: 1px solid #ddd; border-radius: 4px; margin: 20px 0;">
+        <div style="padding: 15px; border-bottom: 1px solid #ddd;">
+            <h3 style="margin: 0;">Acciones Rápidas</h3>
+        </div>
+        <div style="padding: 15px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <a href="{{ url_for('admin_usuarios') }}" style="
+                            display: block;
+                            padding: 12px;
+                            background: #f8f9fa;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            text-decoration: none;
+                            color: #333;
+                        ">
+                            Gestionar Usuarios
+                        </a>
+                        <a href="{{ url_for('admin_archivos') }}" style="
+                            display: block;
+                            padding: 12px;
+                            background: #f8f9fa;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            text-decoration: none;
+                            color: #333;
+                        ">
+                            Ver Todos los Archivos
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <a href="{{ url_for('logout') }}" style="
+                            display: block;
+                            padding: 12px;
+                            background: #f8f9fa;
+                            border: 1px solid #ddd;
+                            border-radius: 4px;
+                            text-decoration: none;
+                            color: #333;
+                        ">
+                            Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
