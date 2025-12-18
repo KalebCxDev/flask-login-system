@@ -2,18 +2,23 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, Usuario, Postulante, Archivo
 from datetime import datetime
+from flask_mail import Message
+import random
 import os
 import uuid
+from config_mail import init_mail, mail
 
 app = Flask(__name__)
 app.secret_key = 'mi-clave-secreta'
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{os.path.join(BASE_DIR, "instance", "app.db")}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 CARPETA_ARCHIVOS = os.path.join(BASE_DIR, 'uploads')
 EXTENSIONES_PERMITIDAS = {'pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx', 'xlsx', 'txt', 'gif', 'webp'}
 TAMANO_MAXIMO = 5 * 1024 * 1024
 db.init_app(app)
+init_mail(app)
 os.makedirs(os.path.join(BASE_DIR, 'instance'), exist_ok=True)
 os.makedirs(CARPETA_ARCHIVOS, exist_ok=True)
 
@@ -41,44 +46,100 @@ def postular():
     dni = request.form.get('dni', '').strip()
     password = request.form.get('password', '')
     password_confirm = request.form.get('password_confirm', '')
+
     if not all([nombres, apellidos, fecha_nac, correo, dni, password]):
         flash('Todos los campos son obligatorios', 'error')
         return redirect(url_for('index'))
+
     if password != password_confirm:
         flash('Las contraseñas no coinciden', 'error')
         return redirect(url_for('index'))
+
     if not validar_dni(dni):
         flash('El DNI debe tener 8 dígitos', 'error')
         return redirect(url_for('index'))
+
     if Usuario.query.filter_by(email=correo).first():
         flash('El correo ya está registrado', 'error')
         return redirect(url_for('index'))
+
     archivo = request.files.get('archivo_de_identidad')
+
     try:
-        nuevo_usuario = Usuario(email=correo,password_hash=generate_password_hash(password),tipo='postulante')
+        nuevo_usuario = Usuario(
+            email=correo,
+            password_hash=generate_password_hash(password),
+            tipo='postulante'
+        )
         db.session.add(nuevo_usuario)
         db.session.flush()
-        nuevo_postulante = Postulante(usuario_id=nuevo_usuario.id,nombres=nombres,apellidos=apellidos,
-            fecha_nacimiento=datetime.strptime(fecha_nac, '%Y-%m-%d').date(),dni=dni,estado='pendiente')
+
+        nuevo_postulante = Postulante(
+            usuario_id=nuevo_usuario.id,
+            nombres=nombres,
+            apellidos=apellidos,
+            fecha_nacimiento=datetime.strptime(fecha_nac, '%Y-%m-%d').date(),
+            dni=dni,
+            estado='pendiente'
+        )
         db.session.add(nuevo_postulante)
-        if archivo and archivo.filename and archivo_valido(archivo.filename):
+
+        if archivo and archivo.filename:
+            if not archivo_valido(archivo.filename):
+                flash('Tipo de archivo no permitido', 'error')
+                return redirect(url_for('index'))
+
             ext = archivo.filename.rsplit('.', 1)[1].lower()
             nombre_unico = f"{uuid.uuid4()}.{ext}"
             ruta = os.path.join(CARPETA_ARCHIVOS, nombre_unico)
+
             archivo.save(ruta)
             tamano = os.path.getsize(ruta)
-            if tamano <= TAMANO_MAXIMO:
-                nuevo_archivo = Archivo(usuario_id=nuevo_usuario.id,nombre_original=archivo.filename,
-                    nombre_guardado=nombre_unico,extension=ext,mime_type='application/octet-stream',ruta=ruta,tamano=tamano)
-                db.session.add(nuevo_archivo)
-        db.session.commit()
-        flash('Registro exitoso. Usa el código 123456 para verificar', 'success')
+
+            if tamano > TAMANO_MAXIMO:
+                os.remove(ruta)
+                flash('El archivo supera el tamaño máximo permitido (5MB)', 'error')
+                return redirect(url_for('index'))
+
+            nuevo_archivo = Archivo(
+                usuario_id=nuevo_usuario.id,
+                nombre_original=archivo.filename,
+                nombre_guardado=nombre_unico,
+                extension=ext,
+                mime_type='application/octet-stream',
+                ruta=ruta,
+                tamano=tamano
+            )
+            db.session.add(nuevo_archivo)
+
+        codigo_verificacion = str(random.randint(100000, 999999))
         session['correo_verificar'] = correo
+        session['codigo_verificacion'] = codigo_verificacion
+
+        db.session.commit()
+        try:
+            msg = Message(
+                subject="Verifica tu correo en Mi App",
+                recipients=[correo],
+                body=f"Hola {nombres}, tu código de verificación es: {codigo_verificacion}"
+            )
+            mail.send(msg)
+        except Exception as e:
+            print(f"Error enviando correo: {e}")
+            flash('No se pudo enviar el correo de verificación, inténtalo más tarde', 'error')
+
+        flash(f'Registro exitoso. Se ha enviado un código de verificación a {correo}', 'success')
         return redirect(url_for('verify'))
+
     except Exception as e:
         db.session.rollback()
         flash('Error en el registro', 'error')
         return redirect(url_for('index'))
+
+@app.errorhandler(413)
+def archivo_demasiado_grande(e):
+    flash('El archivo supera el tamaño máximo permitido (5MB)', 'error')
+    return redirect(request.referrer or url_for('index'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -98,13 +159,17 @@ def login():
 @app.route('/verify', methods=['GET', 'POST'])
 def verify():
     if request.method == 'POST':
-        if request.form.get('codigo') == '123456':
+        codigo_ingresado = request.form.get('codigo')
+        codigo_esperado = session.get('codigo_verificacion')
+        if codigo_ingresado == codigo_esperado:
             session.pop('correo_verificar', None)
+            session.pop('codigo_verificacion', None)
             flash('Correo verificado! Ya puedes iniciar sesión', 'success')
             return redirect(url_for('login'))
-        flash('Código incorrecto', 'error')
-    return render_template('verify.html')
+        else:
+            flash('Código incorrecto', 'error')
 
+    return render_template('verify.html')
 @app.route('/logout')
 def logout():
     session.clear()
@@ -170,8 +235,9 @@ def subir_archivo():
     tamano = os.path.getsize(ruta)
     if tamano > TAMANO_MAXIMO:
         os.remove(ruta)
-        flash('El archivo es muy grande (máximo 5MB)', 'error')
+        flash('El archivo supera el tamaño máximo permitido (5MB)', 'error')
         return redirect(url_for('mis_archivos'))
+
     nuevo_archivo = Archivo(usuario_id=session['user_id'],nombre_original=archivo.filename,
         nombre_guardado=nombre_unico,extension=ext,mime_type='application/octet-stream',ruta=ruta,tamano=tamano)
     db.session.add(nuevo_archivo)
