@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     password_hash TEXT NOT NULL,
     tipo TEXT NOT NULL
         CHECK (tipo IN ('admin', 'postulante')),
+    verificado BOOLEAN DEFAULT FALSE,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 

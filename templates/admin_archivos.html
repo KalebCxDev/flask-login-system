@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Archivos de Usuarios{% endblock %}
+
+{% block content %}
+<h2>Archivos Subidos por Usuarios</h2>
+
+<div class="card" style="background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 20px; margin: 20px 0;">
+    <div class="table-container">
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+            <thead>
+                <tr style="background: #f2f2f2;">
+                    <th style="padding: 8px; border: 1px solid #ccc;">ID</th>
+                    <th style="padding: 8px; border: 1px solid #ccc;">Usuario</th>
+                    <th style="padding: 8px; border: 1px solid #ccc;">Archivo</th>
+                    <th style="padding: 8px; border: 1px solid #ccc;">Tamaño</th>
+                    <th style="padding: 8px; border: 1px solid #ccc;">Fecha Subida</th>
+                    <th style="padding: 8px; border: 1px solid #ccc;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for archivo in archivos %}
+                <tr>
+                    <td style="padding: 8px; border: 1px solid #ccc;">{{ archivo.id }}</td>
+                    <td style="padding: 8px; border: 1px solid #ccc;">{{ archivo.usuario.email }}</td>
+                    <td style="padding: 8px; border: 1px solid #ccc;">
+                        📄 {{ archivo.nombre_original }}
+                        <small style="color: #666;">(.{{ archivo.extension }})</small>
+                        {% if archivo.extension == 'pdf' %}
+                        <br>
+                        <a href="{{ archivo.ruta }}" 
+                           target="_blank" 
+                           style="
+                               font-size: 0.85em; 
+                               color: #28a745; 
+                               text-decoration: none;
+                               display: inline-block;
+                               margin-top: 3px;
+                           "
+                           title="Ver PDF en nueva pestaña">
+                           Ver documento
+                        </a>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 8px; border: 1px solid #ccc;">{{ (archivo.tamano / 1024)|round(2) }} KB</td>
+                    <td style="padding: 8px; border: 1px solid #ccc;">{{ archivo.fecha_subida.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td style="padding: 8px; border: 1px solid #ccc;">
+                        <div class="btn-group" style="display: flex; gap: 5px;">
+                            <a href="{{ url_for('admin_descargar_archivo', file_id=archivo.id) }}" 
+                               style="
+                                   display: inline-block;
+                                   padding: 4px 8px;
+                                   background: #007bff;
+                                   color: white;
+                                   text-decoration: none;
+                                   border-radius: 3px;
+                                   border: 1px solid #007bff;
+                               "
+                               title="Descargar">
+                                Descargar
+                            </a>
+                            <form method="POST" 
+                                  action="{{ url_for('admin_eliminar_archivo', file_id=archivo.id) }}" 
+                                  style="display: inline;"
+                                  onsubmit="return confirm('¿Estás seguro de eliminar este archivo?');">
+                                <button type="submit" style="
+                                    padding: 4px 8px;
+                                    background: #dc3545;
+                                    color: white;
+                                    border: 1px solid #dc3545;
+                                    border-radius: 3px;
+                                    cursor: pointer;
+                                " title="Eliminar">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<a href="{{ url_for('admin_dashboard') }}" style="
+    display: inline-block;
+    background: #6c757d;
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 20px;
+">
+    ← Volver al Panel
+</a>
+{% endblock %}

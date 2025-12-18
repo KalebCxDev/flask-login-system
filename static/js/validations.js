@@ -1,9 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     const dropZone = document.getElementById('dropZone');
-    if (!dropZone) return; // Si no hay dropZone, no hacer nada
+    if (!dropZone) return;
 
-    // Detectar qué input file existe
     const fileInput =
         document.getElementById('archivo_de_identidad') ||
         document.getElementById('archivoInput');
@@ -14,38 +13,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!fileInput) return;
 
-    // Tamaño máximo según el formulario
-    const maxSize = fileInput.id === 'archivo_de_identidad'
-        ? 5 * 1024 * 1024   // 5MB Registro
-        : 10 * 1024 * 1024; // 10MB Mis archivos
+    const maxSize = 5 * 1024 * 1024;
 
-    // Tipos permitidos según input
     const validTypes = fileInput.accept
         .split(',')
         .map(type => type.trim());
 
-    // Click en la zona de drop
     dropZone.addEventListener('click', () => fileInput.click());
 
-    // Cambio de archivo
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
             handleFile(e.target.files[0]);
         }
     });
 
-    // Drag over
     dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
         dropZone.classList.add('drag-over');
     });
 
-    // Drag leave
     dropZone.addEventListener('dragleave', () => {
         dropZone.classList.remove('drag-over');
     });
 
-    // Drop
     dropZone.addEventListener('drop', (e) => {
         e.preventDefault();
         dropZone.classList.remove('drag-over');
@@ -58,14 +48,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function handleFile(file) {
 
-        // Validar tamaño
         if (file.size > maxSize) {
             alert(`El archivo supera el tamaño máximo permitido.`);
             resetInput();
             return;
         }
 
-        // Validar extensión (por accept)
         const extension = '.' + file.name.split('.').pop().toLowerCase();
         if (!validTypes.includes(extension)) {
             alert('Formato de archivo no permitido.');
@@ -73,14 +61,12 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Mostrar preview
         if (filePreview) {
             fileName.textContent = file.name;
             fileSize.textContent = formatFileSize(file.size);
             filePreview.classList.add('show');
         }
 
-        // Actualizar texto del dropzone
         dropZone.innerHTML = `
             <p><strong>${file.name}</strong></p>
             <p>Haz clic o arrastra otro archivo para reemplazar</p>

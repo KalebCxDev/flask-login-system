@@ -2,7 +2,6 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 db = SQLAlchemy()
-
 class Usuario(db.Model):
     __tablename__ = 'usuarios'
     id = db.Column(db.Integer, primary_key=True)
@@ -10,8 +9,9 @@ class Usuario(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     tipo = db.Column(db.String(20), default='postulante')
     fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
-    postulante = db.relationship('Postulante', backref='usuario', uselist=False)
-    archivos = db.relationship('Archivo', backref='usuario')
+    verificado = db.Column(db.Boolean, default=False) 
+    postulante = db.relationship('Postulante', backref='usuario', uselist=False, cascade="all, delete-orphan")
+    archivos = db.relationship('Archivo', backref='usuario', cascade="all, delete-orphan")
 
 class Postulante(db.Model):
     __tablename__ = 'postulantes'
@@ -21,7 +21,7 @@ class Postulante(db.Model):
     apellidos = db.Column(db.String(100), nullable=False)
     fecha_nacimiento = db.Column(db.Date, nullable=False)
     dni = db.Column(db.String(20))
-    estado = db.Column(db.String(20), default='registrado')
+    estado = db.Column(db.String(20), default='pendiente')
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Archivo(db.Model):

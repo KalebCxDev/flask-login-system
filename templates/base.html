@@ -2,27 +2,30 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Mi Aplicación{% endblock %}</title>
+    <title>{% block title %} Web de Adminsion {% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <header>
-        <h1>Mi Aplicación de Postulantes</h1>
+        <h1>Admision de postulantes IESTPO</h1>
         <nav>
             {% if session.user_id %}
-                <!-- Usuario logueado -->
-                <a href="{{ url_for('dashboard') }}">Dashboard</a>
-                <a href="{{ url_for('perfil') }}">Mi Perfil</a>
-                <a href="{{ url_for('mis_archivos') }}">Mis Archivos</a>
+                {% if session.tipo_usuario == 'admin' %}
+                    <a href="{{ url_for('admin_dashboard') }}">Panel Admin</a>
+                    <a href="{{ url_for('admin_usuarios') }}">Usuarios</a>
+                    <a href="{{ url_for('admin_archivos') }}">Archivos</a>
+                {% else %}
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('perfil') }}">Mi Perfil</a>
+                    <a href="{{ url_for('mis_archivos') }}">Mis Archivos</a>
+                {% endif %}
                 <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
             {% else %}
-                <!-- Usuario no logueado -->
                 <a href="{{ url_for('index') }}">Registro</a>
                 <a href="{{ url_for('login') }}">Login</a>
             {% endif %}
         </nav>
     </header>
-    
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div class="flash-messages">
@@ -32,33 +35,32 @@
             </div>
         {% endif %}
     {% endwith %}
-    
     <main>
         {% block content %}
         {% endblock %}
     </main>
-    
     <footer>
         <div class="footer-content">
-            <div class="team-section">
-                <h3>Equipo de Desarrollo</h3>
-                <ul>
-                    <li>Joshua Velasquez<li>
-                    <li>Joseph Cruz</li>
-                    <li>Josias Salcedo</li>
-                </ul>
-            </div>
-            
             <div class="info-section">
-                <p><strong>Entorno de desarrlo:</strong> Vscode + Guthub</p>
+                <p><strong>Entorno de desarrollo:</strong> Vscode + Github</p>
+                <p><strong>Usuario:</strong> 
+                    {% if session.user_id %}
+                        {{ session.email }}
+                        {% if session.tipo_usuario == 'admin' %}
+                            (Administrador)
+                        {% else %}
+                            (Postulante)
+                        {% endif %}
+                    {% else %}
+                        No autenticado
+                    {% endif %}
+                </p>
             </div>
-            
             <div class="copyright-section">
-                <p>&copy; 2025 Aplicación de Postulantes - Desarrollado con Flask</p>
+                <p>&copy; 2025 - Web de admision IESTPO</p>
             </div>
         </div>
     </footer>
-    
     <script src="{{ url_for('static', filename='js/validations.js') }}"></script>
 </body>
 </html>
