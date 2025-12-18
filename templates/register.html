@@ -6,7 +6,6 @@
 <h2>Registro de Postulante</h2>
 
 <form action="{{ url_for('postular') }}" method="post" enctype="multipart/form-data" class="two-column-form" id="registrationForm">
-    <!-- Columna 1: Todos los datos personales -->
     <div class="form-column personal-data-column">
         <div class="form-group">
             <label for="nombres">Nombres:</label>
@@ -44,7 +43,6 @@
         </div>
     </div>
     
-    <!-- Columna 2: Solo el campo de archivo con área de drop -->
     <div class="form-column file-column">
         <div class="file-upload-area">
             <label for="archivo_de_identidad">Documento de identidad (opcional)</label>
@@ -66,12 +64,11 @@
         </div>
     </div>
     
-    <!-- Botón que ocupa ancho completo -->
+
     <div class="form-actions full-width">
         <button type="submit">Postular</button>
     </div>
     
-    <!-- Enlace de login que ocupa ancho completo -->
     <div class="login-link full-width">
         <p>¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Inicia sesión aquí</a></p>
     </div>

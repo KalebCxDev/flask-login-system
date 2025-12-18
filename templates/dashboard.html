@@ -3,16 +3,33 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h2>Dashboard del Usuario</h2>
+<div class="user-dashboard">
+    <h2>Dashboard del Usuario</h2>
 
-<p><strong>Estado de postulación:</strong> {{ estado if estado else 'Pendiente' }}</p>
-
-<nav>
-    <ul>
-        <li><a href="{{ url_for('perfil') }}">Mi perfil</a></li>
-        <li><a href="{{ url_for('mis_archivos') }}">Mis archivos</a></li>
-        <li><a href="{{ url_for('logout') }}">Cerrar sesión</a></li>
-    </ul>
-</nav>
-
+    <div class="admin-card">
+        <div class="status-info">
+            <h3>Estado de postulación:</h3>
+            <p class="status-value">
+                {% if estado == 'aprobado' %}
+                    <span class="status-badge status-aprobado">{{ estado|title }}</span>
+                {% elif estado == 'rechazado' %}
+                    <span class="status-badge status-rechazado">{{ estado|title }}</span>
+                {% elif estado == 'pendiente' %}
+                    <span class="status-badge status-pendiente">{{ estado|title }}</span>
+                {% else %}
+                    <span class="status-badge status-pendiente">Pendiente</span>
+                {% endif %}
+            </p>
+        </div>
+        
+        <div class="dashboard-nav mt-4">
+            <h3>Acciones rápidas</h3>
+            <div class="btn-group d-flex gap-3">
+                <a href="{{ url_for('perfil') }}" class="btn btn-primary">Mi Perfil</a>
+                <a href="{{ url_for('mis_archivos') }}" class="btn btn-success">Mis Archivos</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-secondary">Cerrar Sesión</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
