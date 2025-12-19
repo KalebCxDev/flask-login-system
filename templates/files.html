@@ -32,7 +32,8 @@
 
     <div class="admin-card mt-4">
         <h3>Archivos subidos</h3>
-
+        <br>
+        <br>
         {% if archivos %}
         <div class="table-responsive">
             <table class="data-table">
@@ -69,7 +70,7 @@
         <p class="text-center">No has subido archivos aún.</p>
         {% endif %}
     </div>
-
+    <br>
     <a href="{{ url_for('dashboard') }}" class="btn btn-secondary mt-4">
         ← Volver al Dashboard
     </a>
