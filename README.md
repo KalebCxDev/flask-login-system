@@ -43,7 +43,7 @@ Este proyecto es una aplicación web desarrollada con **Flask** para gestionar u
 
 1.  **Clonar el repositorio:**
     ```bash
-    git clone <url-del-repositorio>
+    git clone https://github.com/KalebCxDev/flask-login-system.git
     cd flask-login-system
     ```
 
@@ -71,13 +71,18 @@ Este proyecto es una aplicación web desarrollada con **Flask** para gestionar u
     SECRET_KEY=tu_clave_secreta_super_segura
 
     # Configuración de Correo (Gmail)
-    MAIL_USERNAME=tu_correo@gmail.com
-    MAIL_PASSWORD=tu_contraseña_de_aplicacion
+    MAIL_SERVER=smtp.gmail.com
+    MAIL_PORT=587
+    MAIL_USE_TLS=True
+    MAIL_USERNAME=tucorreo@gmail.com
+    MAIL_PASSWORD=tu_contraseña_de_app
+    MAIL_DEFAULT_SENDER=tucorreo@gmail.com
 
     # Configuración de Cloudinary (Opcional, si no se pone usa almacenamiento local)
-    CLOUDINARY_CLOUD_NAME=nombre_cloud
-    CLOUDINARY_API_KEY=api_key
-    CLOUDINARY_API_SECRET=api_secret
+    CLOUDINARY_CLOUD_NAME=cloudinary_cloud_name
+    CLOUDINARY_API_KEY=tu_api_key
+    CLOUDINARY_API_SECRET=tu_api_secret
+
     ```
 
 5.  **Inicializar la Base de Datos:**
