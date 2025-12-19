@@ -14,31 +14,36 @@ cloudinary.config(
     secure=True
 )
 
-def upload_to_cloudinary(file_obj, folder="postulantes"):
-    """Sube archivo a Cloudinary y devuelve URL segura"""
+def upload_to_cloudinary(file_obj, folder="postulantes", resource_type="auto"):
     try:
-        temp_path = os.path.join(tempfile.gettempdir(), f"{datetime.now().timestamp()}_{file_obj.filename}")
+        temp_path = os.path.join(
+            tempfile.gettempdir(),
+            f"{datetime.now().timestamp()}_{file_obj.filename}"
+        )
         file_obj.save(temp_path)
+
         result = cloudinary.uploader.upload(
             temp_path,
             folder=folder,
-            resource_type="auto",
+            resource_type=resource_type,
             use_filename=True,
             unique_filename=True,
             overwrite=False,
             quality="auto:good",
             fetch_format="auto"
         )
+
         os.remove(temp_path)
-        
+
         return {
             'success': True,
             'public_id': result['public_id'],
             'secure_url': result['secure_url'],
             'format': result['format'],
-            'bytes': result['bytes']
+            'bytes': result['bytes'],
+            'resource_type': result['resource_type']
         }
-        
+
     except Exception as e:
         return {'success': False, 'error': str(e)}
 
