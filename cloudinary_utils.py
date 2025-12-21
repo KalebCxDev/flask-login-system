@@ -1,9 +1,7 @@
 import cloudinary
 import cloudinary.uploader
-import cloudinary.api
 import os
 import tempfile
-from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,59 +12,30 @@ cloudinary.config(
     secure=True
 )
 
-def upload_to_cloudinary(file_obj, folder="postulantes", resource_type="auto"):
+def subir_a_cloudinary(archivo, carpeta="postulantes", tipo_recurso="auto"):
     try:
-        temp_path = os.path.join(
-            tempfile.gettempdir(),
-            f"{datetime.now().timestamp()}_{file_obj.filename}"
+        with tempfile.NamedTemporaryFile(delete=False, suffix=archivo.filename) as tmp:
+            ruta_temp = tmp.name
+            archivo.save(ruta_temp)
+        resultado = cloudinary.uploader.upload(
+            ruta_temp,
+            folder=carpeta,
+            resource_type=tipo_recurso
         )
-        file_obj.save(temp_path)
-
-        result = cloudinary.uploader.upload(
-            temp_path,
-            folder=folder,
-            resource_type=resource_type,
-            use_filename=True,
-            unique_filename=True,
-            overwrite=False,
-            quality="auto:good",
-            fetch_format="auto"
-        )
-
-        os.remove(temp_path)
-
+        os.remove(ruta_temp)
         return {
             'success': True,
-            'public_id': result['public_id'],
-            'secure_url': result['secure_url'],
-            'format': result['format'],
-            'bytes': result['bytes'],
-            'resource_type': result['resource_type']
+            'public_id': resultado['public_id'],
+            'secure_url': resultado['secure_url'],
+            'format': resultado['format'],
+            'bytes': resultado['bytes']
         }
+    except Exception as error:
+        return {'success': False, 'error': str(error)}
 
-    except Exception as e:
-        return {'success': False, 'error': str(e)}
-
-def delete_from_cloudinary(public_id):
-    """Elimina archivo de Cloudinary"""
+def eliminar_de_cloudinary(id_publico):
     try:
-        result = cloudinary.uploader.destroy(public_id)
-        return {'success': True, 'result': result}
-    except Exception as e:
-        return {'success': False, 'error': str(e)}
-
-def get_secure_url(public_id, **options):
-    """Genera URL segura con opciones de transformación"""
-    return cloudinary.utils.cloudinary_url(
-        public_id,
-        **options
-    )[0]
-
-def get_optimized_url(public_id, width=800, quality=80):
-    """Devuelve URL optimizada (más rápida, menos datos)"""
-    return cloudinary.utils.cloudinary_url(
-        public_id,
-        width=width,
-        quality=quality,
-        fetch_format="auto"
-    )[0]
+        cloudinary.uploader.destroy(id_publico)
+        return {'success': True}
+    except Exception as error:
+        return {'success': False, 'error': str(error)}

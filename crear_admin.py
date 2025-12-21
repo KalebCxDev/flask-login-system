@@ -1,53 +1,45 @@
-#!/usr/bin/env python3
 import sys
 import os
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
 from app import app, db
 from models import Usuario
 from werkzeug.security import generate_password_hash
 
 def crear_admin():
     with app.app_context():
-        print("\n" + "="*50)
-        print("CREACIÓN DE USUARIO ADMINISTRADOR")
-        print("="*50)
-
-        email = input("Correo electrónico del administrador: ").strip().lower()
-        if Usuario.query.filter_by(email=email).first():
-            print(f" El correo {email} ya está registrado")
+        print("\n" + "=" * 50)
+        print("CREAR USUARIO ADMINISTRADOR")
+        print("=" * 50)
+        correo = input("Correo electrónico: ").strip().lower()
+        if Usuario.query.filter_by(email=correo).first():
+            print(f" El correo {correo} ya existe")
             return
-        
-        password = input("Contraseña: ").strip()
-        confirm_password = input("Confirmar contraseña: ").strip()
-        
-        if password != confirm_password:
-            print("Las contraseñas no coinciden")
+        contrasena = input("Contraseña: ").strip()
+        confirmar = input("Confirmar contraseña: ").strip()
+        if contrasena != confirmar:
+            print(" Las contraseñas no coinciden")
             return
-        
-        if len(password) < 6:
-            print("La contraseña debe tener al menos 6 caracteres")
+        if len(contrasena) < 6:
+            print(" La contraseña debe tener al menos 6 caracteres")
             return
         try:
-            admin = Usuario(
-                email=email,
-                password_hash=generate_password_hash(password),
+            administrador = Usuario(
+                email=correo,
+                password_hash=generate_password_hash(contrasena),
                 tipo='admin',
                 verificado=True
             )
-            
-            db.session.add(admin)
+            db.session.add(administrador)
             db.session.commit()
-            
-            print("\n Usuario administrador creado exitosamente")
-            print(f"   Email: {email}")
+            print("\n ✓ Administrador creado exitosamente")
+            print(f"   Correo: {correo}")
             print(f"   Tipo: Administrador")
-            print(f"   ID: {admin.id}")
-            print("\n  Guarda estas credenciales en un lugar seguro")
-            
-        except Exception as e:
+            print(f"   ID: {administrador.id}")
+            print("\n   Guarda estas credenciales")
+        except Exception as error:
             db.session.rollback()
-            print(f" error al crear administrador: {str(e)}")
+            print(f" ✗ Error: {error}")
+
 if __name__ == '__main__':
     crear_admin()
