@@ -59,7 +59,20 @@ def guardar_archivo(archivo, usuario_id=None):
     ])
     
     if use_cloudinary:
-        result = upload_to_cloudinary(archivo, folder=f"postulantes/user_{usuario_id or session['user_id']}")
+        ext = archivo.filename.rsplit('.', 1)[1].lower()
+
+        if ext in ['jpg', 'jpeg', 'png', 'gif', 'webp']:
+            resource_type = 'image'
+        elif ext in ['mp4', 'webm', 'ogg']:
+            resource_type = 'video'
+        else:
+            resource_type = 'raw'
+
+        result = upload_to_cloudinary(
+            archivo,
+            folder=f"postulantes/user_{usuario_id or session['user_id']}",
+            resource_type=resource_type
+        )
         
         if not result['success']:
             return None, f'Error Cloudinary: {result["error"]}'
@@ -89,7 +102,7 @@ def guardar_archivo(archivo, usuario_id=None):
             nombre_original=archivo.filename,
             nombre_guardado=nombre_unico,
             extension=ext,
-            mime_type='application/octet-stream',
+            mime_type=result.get('resource_type'),
             ruta=ruta_local,
             tamano=os.path.getsize(ruta_local)
         )
@@ -282,8 +295,10 @@ def archivo_demasiado_grande(e):
     return redirect(request.referrer or url_for('index'))
 
 with app.app_context(): db.create_all()
-
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0",
- port=port)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)

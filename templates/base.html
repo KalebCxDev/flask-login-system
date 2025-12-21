@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %} Web de Adminsion {% endblock %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
@@ -42,7 +43,6 @@
     <footer>
         <div class="footer-content">
             <div class="info-section">
-                <p><strong>Entorno de desarrollo:</strong> Vscode + Github</p>
                 <p><strong>Usuario:</strong> 
                     {% if session.user_id %}
                         {{ session.email }}
