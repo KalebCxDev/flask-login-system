@@ -1,10 +1,7 @@
 {% extends "base.html" %}
-
 {% block title %}Gestionar Usuarios{% endblock %}
-
 {% block content %}
 <h2>Gestionar Usuarios Postulantes de IESTPO</h2>
-
 <div class="card" style="background: #fff; border: 1px solid #ddd; border-radius: 4px; padding: 20px; margin: 20px 0;">
     <div class="table-container">
         <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
@@ -40,13 +37,20 @@
                             {{ postulante.estado|title }}
                         </span>
                     </td>
-                    <td style="padding: 8px; border: 1px solid #ccc;">{{ postulante.fecha_registro.strftime('%d/%m/%Y') }}</td>
+                    <td style="padding: 8px; border: 1px solid #ccc;">{{ postulante.fecha_registro.strftime('%d/%m/%Y')
+                        }}</td>
                     <td style="padding: 8px; border: 1px solid #ccc;">
-                        <form method="POST" action="{{ url_for('cambiar_estado_postulante', postulante_id=postulante.id) }}" style="display: inline;">
-                            <select name="estado" onchange="this.form.submit()" style="padding: 4px; border: 1px solid #ccc; border-radius: 3px;">
-                                <option value="pendiente" {% if postulante.estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
-                                <option value="aprobado" {% if postulante.estado == 'aprobado' %}selected{% endif %}>Aprobado</option>
-                                <option value="rechazado" {% if postulante.estado == 'rechazado' %}selected{% endif %}>Rechazado</option>
+                        <form method="POST"
+                            action="{{ url_for('cambiar_estado_postulante', postulante_id=postulante.id) }}"
+                            style="display: inline;">
+                            <select name="estado" onchange="this.form.submit()"
+                                style="padding: 4px; border: 1px solid #ccc; border-radius: 3px;">
+                                <option value="pendiente" {% if postulante.estado=='pendiente' %}selected{% endif %}>
+                                    Pendiente</option>
+                                <option value="aprobado" {% if postulante.estado=='aprobado' %}selected{% endif %}>
+                                    Aprobado</option>
+                                <option value="rechazado" {% if postulante.estado=='rechazado' %}selected{% endif %}>
+                                    Rechazado</option>
                             </select>
                         </form>
                     </td>
@@ -56,7 +60,6 @@
         </table>
     </div>
 </div>
-
 <a href="{{ url_for('admin_dashboard') }}" style="
     display: inline-block;
     background: #6c757d;

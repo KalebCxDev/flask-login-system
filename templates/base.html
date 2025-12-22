@@ -11,30 +11,30 @@
         <h1>Admision de postulantes IESTPO</h1>
         <nav>
             {% if session.user_id %}
-                {% if session.tipo_usuario == 'admin' %}
-                    <a href="{{ url_for('admin_dashboard') }}">Panel Admin</a>
-                    <a href="{{ url_for('admin_usuarios') }}">Usuarios</a>
-                    <a href="{{ url_for('admin_archivos') }}">Archivos</a>
-                {% else %}
-                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
-                    <a href="{{ url_for('perfil') }}">Mi Perfil</a>
-                    <a href="{{ url_for('mis_archivos') }}">Mis Archivos</a>
-                {% endif %}
-                <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+            {% if session.tipo_usuario == 'admin' %}
+            <a href="{{ url_for('admin_dashboard') }}">Panel Admin</a>
+            <a href="{{ url_for('admin_usuarios') }}">Usuarios</a>
+            <a href="{{ url_for('admin_archivos') }}">Archivos</a>
             {% else %}
-                <a href="{{ url_for('index') }}">Registro</a>
-                <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('perfil') }}">Mi Perfil</a>
+            <a href="{{ url_for('mis_archivos') }}">Mis Archivos</a>
+            {% endif %}
+            <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+            {% else %}
+            <a href="{{ url_for('index') }}">Registro</a>
+            <a href="{{ url_for('login') }}">Login</a>
             {% endif %}
         </nav>
     </header>
     {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="flash {{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
+    {% if messages %}
+    <div class="flash-messages">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
     {% endwith %}
     <main>
         {% block content %}
@@ -43,16 +43,16 @@
     <footer>
         <div class="footer-content">
             <div class="info-section">
-                <p><strong>Usuario:</strong> 
+                <p><strong>Usuario:</strong>
                     {% if session.user_id %}
-                        {{ session.email }}
-                        {% if session.tipo_usuario == 'admin' %}
-                            (Administrador)
-                        {% else %}
-                            (Postulante)
-                        {% endif %}
+                    {{ session.email }}
+                    {% if session.tipo_usuario == 'admin' %}
+                    (Administrador)
                     {% else %}
-                        No autenticado
+                    (Postulante)
+                    {% endif %}
+                    {% else %}
+                    No autenticado
                     {% endif %}
                 </p>
             </div>
