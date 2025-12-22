@@ -12,7 +12,7 @@ cloudinary.config(
     secure=True
 )
 
-def subir_a_cloudinary(archivo, carpeta="postulantes", tipo_recurso="auto"):
+def subir_archivo(archivo, carpeta="postulantes", tipo_recurso="auto"):
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix=archivo.filename) as tmp:
             ruta_temp = tmp.name
@@ -33,7 +33,7 @@ def subir_a_cloudinary(archivo, carpeta="postulantes", tipo_recurso="auto"):
     except Exception as error:
         return {'success': False, 'error': str(error)}
 
-def eliminar_de_cloudinary(id_publico):
+def eliminar_archivo(id_publico):
     try:
         cloudinary.uploader.destroy(id_publico)
         return {'success': True}
