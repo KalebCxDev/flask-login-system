@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, Usuario, Postulante, Archivo
 from datetime import datetime
@@ -288,6 +288,17 @@ def admin_eliminar_archivo(file_id):
         db.session.delete(archivo); db.session.commit(); flash('Archivo eliminado correctamente', 'success')
     except: db.session.rollback(); flash('Error al eliminar archivo', 'error')
     return redirect(url_for('admin_archivos'))
+
+@app.route('/cambiar-tema', methods=['POST'])
+def cambiar_tema():
+    modo = request.form.get('modo')
+    next_page = request.form.get('next', url_for('index'))
+    resp = make_response(redirect(next_page))
+    if modo == 'claro':
+        resp.set_cookie('modo_claro', 'true', max_age=30*24*60*60)
+    else:
+        resp.set_cookie('modo_claro', 'false', max_age=30*24*60*60)
+    return resp
 
 @app.errorhandler(413)
 def archivo_demasiado_grande(e):
