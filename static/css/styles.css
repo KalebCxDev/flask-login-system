@@ -10,20 +10,36 @@ header{background:#2d2d35;text-align:center;border-bottom-width:1px}
 footer{display:flex;justify-content:center;align-items:center;background:#20232a;color:#a6a8b3;border-top-width:1px}
 main{padding:25px}
 
+/* Footer abajo */
+.all-container{display:grid;min-height:100dvh;grid-template-rows:auto 1fr auto}
+
+/* MEJORAS DE ORGANIZACIÓN Y TAMAÑOS */
+h1{font-size:1.5em;margin-bottom:15px}
+h2{font-size:1.3em;margin-bottom:12px}
+h3{font-size:1.1em;margin-bottom:10px}
+
+/* Mejorar navegación */
+.navegacion{display:flex;justify-content:center;align-items:center;gap:20px;padding:15px 0}
+.navegacion a{margin:0;height:50%}
+.link:hover{color:#ff914d;font-weight:bold}
+
+/* Mejorar formularios */
+.form-group{margin-bottom:20px}
+.form-group label{display:block;margin-bottom:6px;font-weight:600;color:#a6a8b3}
+.form-control{width:100%;padding:10px;background:#20232a;border:1px solid #3a3d4d;color:#e6e6eb;border-radius:4px}
+
+/* Mejorar estados */
+.status-badge,.estado{padding:5px 12px;font-size:0.85em;font-weight:600;border-radius:20px}
+.estado{padding:3px 8px;border-radius:4px;font-size:.85em}
+.estado-aprobado{background:#4ade80;color:#20232a}
+.estado-rechazado{background:#ff0000;color:#fff}
+.estado-pendiente{background:#ff914d;color:#20232a}
+.success{color:#4ade80}
+.error{color:#ff8a3d}
+
 /* COMPONENTES REUTILIZABLES */
-.tarjeta-admin,
-.panel-estadisticas,
-.btn,
-.boton-admin,
-.enlace-accion,
-.file-drop-zone{
-    background:#2d2d35;
-    border:1px solid #3a3d4d;
-    border-radius:8px;
-    padding:20px;
-    margin:20px 0;
-    transition:.3s
-}
+.tarjeta-admin,.panel-estadisticas,.btn,.boton-admin,.enlace-accion,.file-drop-zone{background:#2d2d35;border:1px solid #3a3d4d;border-radius:8px;padding:20px;margin:20px 0;transition:.3s}
+.tarjeta-admin{padding:25px;margin:30px auto;max-width:90%}
 .panel-estadisticas{margin:20px 0}
 
 /* GRIDS */
@@ -41,20 +57,12 @@ input:focus{outline:none}
 input::-webkit-calendar-picker-indicator{filter:invert(1);cursor:pointer}
 
 /* INPUTS CON BORDE INFERIOR */
-.form-column input,
-.columna1 input{
-    margin:3px;border:none;border-bottom:1px solid #a6a8b3;background:#20232a
-}
+.form-column input,.columna1 input{margin:3px;border:none;border-bottom:1px solid #a6a8b3;background:#20232a}
 .columna1 input{margin:5px}
 
 /* BOTONES */
-.btn,.boton-admin,.enlace-accion{
-    display:inline-block;padding:12px 20px;color:#e6e6eb;font-weight:600;text-align:center;
-    background:#2d2d35;border-color:#3a3d4d
-}
-.btn:hover,.boton-admin:hover,.enlace-accion:hover{
-    background:#ff914d;transform:translateY(-3px);box-shadow:0 8px 15px rgba(0,0,0,.25)
-}
+.btn,.boton-admin,.enlace-accion{display:inline-block;padding:10px 18px;color:#e6e6eb;font-weight:600;text-align:center;background:#2d2d35;border-color:#3a3d4d;min-width:120px;font-size:0.95em}
+.btn:hover,.boton-admin:hover,.enlace-accion:hover{background:#ff914d;transform:translateY(-3px);box-shadow:0 8px 15px rgba(0,0,0,.25)}
 form button{background:#fd9d60;color:#20232a;font-weight:bold;border:none;cursor:pointer}
 form button:hover{background:#ff914d}
 .boton-peligro{padding:4px 8px;background:#ff8a3d;color:#20232a;border:0;border-radius:4px;cursor:pointer}
@@ -63,17 +71,11 @@ form button:hover{background:#ff914d}
 
 /* TABLAS */
 table,.tabla-admin{width:100%;border-collapse:collapse;color:#e6e6eb}
-.tabla-admin{margin-top:10px}
+.tabla-admin{margin-top:10px;font-size:0.9em}
 .cabecera-tabla{background:#20232a}
 th,td,.fila-tabla th,.fila-tabla td{padding:6px;border:1px solid #3a3d4d}
-
-/* ESTADOS */
-.estado{padding:3px 8px;border-radius:4px;font-size:.85em}
-.estado-aprobado{background:#4ade80;color:#20232a}
-.estado-rechazado{background:#ff0000;color:#fff}
-.estado-pendiente{background:#ff914d;color:#20232a}
-.success{color:#4ade80}
-.error{color:#ff8a3d}
+.tabla-admin th{padding:12px 8px;background:#252525}
+.tabla-admin td{padding:10px 8px;vertical-align:middle}
 
 /* UPLOAD Y PREVIEWS */
 .file-column{align-items:center;justify-content:center;height:90vh;border:2px dashed #3a3d4d}
@@ -87,21 +89,24 @@ th,td,.fila-tabla th,.fila-tabla td{padding:6px;border:1px solid #3a3d4d}
 .columna1,.columna2{width:50%;padding:20px;display:flex}
 .columna1{flex-direction:column;justify-content:center}
 .columna2{justify-content:center;align-items:center}
-.columna2 img{width:100%;height:100%;object-fit:cover}
+.columna2 img{width:100%;height:100%;object-fit:cover;padding:80px}
 
 /* TEXTO Y ENLACES */
-.titulo-admin{margin-bottom:15px;font-size:1.05em}
-h1{font-size:1.35em}
+.titulo-admin{margin-bottom:20px;font-size:1.05em}
 p a{color:#ff914d;font-weight:bold}
 p a:hover{text-decoration:underline}
 .enlace-documento{font-size:.85em;color:#ff914d}
+.user-dashboard{display:flex;flex-direction:column;padding:20px}
 
 /* ACCIONES */
 .acciones-rapidas{padding:15px;border-bottom:1px solid #3a3d4d}
 .btn-group{display:flex;gap:15px;justify-content:center;flex-wrap:wrap}
 
 /* PREVIEWS */
-.vista-previa,.video-previa{margin-top:5px;border:1px solid #3a3d4d}
+.vista-previa,.video-previa{
+    margin-top:5px;
+    border:1px solid #3a3d4d
+}
 .vista-previa{max-width:120px;max-height:120px}
 .video-previa{width:180px}
 .personal-data-column{padding:10px 30px}
@@ -112,6 +117,29 @@ p a:hover{text-decoration:underline}
 .field input:focus+label,.field input:valid+label{top:-3px;font-size:10px;color:#ff914d}
 .field input[type="date"]{padding-top:18px}
 .field input[type="date"]+label{top:-10px;font-size:11px;color:#a6a8b3}
+
+/* MODO CLARO/OSCURO */
+:root{--bg-color:#20232a;--card-bg:#2d2d35;--border-color:#3a3d4d;--text-color:#e6e6eb;--text-secondary:#a6a8b3;--accent-color:#ff914d;--accent-hover:#ff8a3d}
+body.light-mode{--bg-color:#f5f5f5;--card-bg:#ffffff;--border-color:#ddd;--text-color:#333;--text-secondary:#666;--accent-color:#ff914d;--accent-hover:#e67e3d}
+body{background-color:var(--bg-color);color:var(--text-color)}
+header,footer{border-color:var(--border-color)}
+header{background:var(--card-bg)}
+footer{background:var(--bg-color);color:var(--text-secondary)}
+.tarjeta-admin,.panel-estadisticas,.btn,.boton-admin,.enlace-accion,.file-drop-zone{background:var(--card-bg);border-color:var(--border-color)}
+input,button,.select-estado,.form-control{background:var(--card-bg);color:var(--text-color);border-color:var(--border-color)}
+.form-column input,.columna1 input{background:var(--bg-color);border-bottom-color:var(--text-secondary)}
+input::placeholder{color:var(--text-secondary)}
+.btn,.boton-admin,.enlace-accion{background:var(--card-bg);border-color:var(--border-color);color:var(--text-color)}
+.btn:hover,.boton-admin:hover,.enlace-accion:hover{background:var(--accent-color)}
+form button{background:var(--accent-color);color:var(--bg-color)}
+form button:hover{background:var(--accent-hover)}
+.theme-toggle{position:fixed;top:15px;right:15px;z-index:1000;background:var(--accent-color);color:var(--bg-color);border:none;border-radius:20px;padding:8px 16px;font-size:0.85em;font-weight:600;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,0.2);transition:all 0.3s}
+.theme-toggle:hover{transform:scale(1.05);background:var(--accent-hover)}
+.header-admin{position:relative;padding-right:100px}
+/* Botón modo claro/oscuro */
+.theme-switch{position:fixed;top:15px;right:15px;z-index:1000}
+.theme-label{display:inline-flex;align-items:center;gap:8px;background:var(--accent-color);color:var(--bg-color);border:none;border-radius:20px;padding:8px 16px;font-size:0.85em;font-weight:600;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,0.2);transition:all 0.3s}
+.theme-label:hover{background:var(--accent-hover);transform:scale(1.05)}
 
 /* RESPONSIVE MÍNIMO */
 @media (max-width: 768px) {.two-column-form, .columnas {flex-direction: column}

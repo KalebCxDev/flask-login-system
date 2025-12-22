@@ -6,63 +6,120 @@
     <title>{% block title %}Web de Admisión{% endblock %}</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        /* Estilos para el toggle switch */
+        .theme-switch {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+        }
+
+        .theme-switch input {
+            display: none;
+        }
+
+        .theme-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: var(--accent-color);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 0.85em;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .theme-label:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
+        }
+
+        .theme-label::before {
+            content: "";
+        }
+
+        .light-mode .theme-label::before {
+            content: "";
+        }
+    </style>
 </head>
 
-<body>
-    {% if session.user_id %}
-    <header>
-        <h1>Admisión de postulantes IESTPO</h1>
-        {% block nav %}
-        <nav>
-            {% if session.tipo_usuario == 'admin' %}
-            <a href="{{ url_for('admin_dashboard') }}">Panel Admin</a>
-            <a href="{{ url_for('admin_usuarios') }}">Usuarios</a>
-            <a href="{{ url_for('admin_archivos') }}">Archivos</a>
-            {% else %}
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('perfil') }}">Mi Perfil</a>
-            <a href="{{ url_for('mis_archivos') }}">Mis Archivos</a>
-            {% endif %}
-            <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
-        </nav>
-        {% endblock %}
-    </header>
-    {% endif %}
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    <div class="flash-messages">
-        {% for category, message in messages %}
-        <div class="flash {{ category }}">{{ message }}</div>
-        {% endfor %}
-    </div>
-    {% endif %}
-    {% endwith %}
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
-    <footer>
-        <div class="footer-content">
-            <div class="info-section">
-                <p><strong>Usuario:</strong>
-                    {% if session.user_id %}
-                    {{ session.email }}
-                    {% if session.tipo_usuario == 'admin' %}
-                    (Administrador)
-                    {% else %}
-                    (Postulante)
-                    {% endif %}
-                    {% else %}
-                    No autenticado
-                    {% endif %}
-                </p>
-            </div>
-            <div class="copyright-section">
-                <p>&copy; 2025 - Web de admisión IESTPO</p>
-            </div>
+<body class="{% if request.cookies.get('modo_claro') == 'true' %}light-mode{% endif %}">
+    <body>
+        <div class="theme-switch">
+            <form method="POST" action="{{ url_for('cambiar_tema') }}" style="display: inline;">
+                <input type="hidden" name="next" value="{{ request.path }}">
+                <button type="submit" class="theme-label" name="modo"
+                    value="{% if request.cookies.get('modo_claro') == 'true' %}oscuro{% else %}claro{% endif %}">
+                    {% if request.cookies.get('modo_claro') == 'true' %}Modo Claro{% else %}Modo Oscuro{% endif %}
+                </button>
+            </form>
         </div>
-    </footer>
-    <script src="{{ url_for('static', filename='js/validations.js') }}"></script>
-</body>
+
+        <div class="all-container">
+            <div class="all-container">
+                {% if session.user_id %}
+                <header>
+                    <h1>Admisión de postulantes IESTPO</h1>
+                    {% block nav %}
+                    <nav class="navegacion">
+                        {% if session.tipo_usuario == 'admin' %}
+                        <a class="link link-a" href="{{ url_for('admin_dashboard') }}">Panel Admin</a>
+                        <a class="link link-b" href="{{ url_for('admin_usuarios') }}">Usuarios</a>
+                        <a class="link link-c" href="{{ url_for('admin_archivos') }}">Archivos</a>
+                        {% else %}
+                        <a class="link link-d" href="{{ url_for('dashboard') }}">Dashboard</a>
+                        <a class="link link-e" href="{{ url_for('perfil') }}">Mi Perfil</a>
+                        <a class="link link-f" href="{{ url_for('mis_archivos') }}">Mis Archivos</a>
+                        {% endif %}
+                        <a class="link link-g" href="{{ url_for('logout') }}">Cerrar Sesión</a>
+                    </nav>
+                    {% endblock %}
+                </header>
+                {% endif %}
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+                <main>
+                    {% block content %}
+                    {% endblock %}
+                </main>
+                <footer>
+                    <div class="footer-content">
+                        <div class="info-section">
+                            <p><strong>Usuario:</strong>
+                                {% if session.user_id %}
+                                {{ session.email }}
+                                {% if session.tipo_usuario == 'admin' %}
+                                (Administrador)
+                                {% else %}
+                                (Postulante)
+                                {% endif %}
+                                {% else %}
+                                No autenticado
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="copyright-section">
+                            <p>&copy; 2025 - Web de admisión IESTPO</p>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+            <script src="{{ url_for('static', filename='js/validations.js') }}"></script>
+    </body>
 
 </html>

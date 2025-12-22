@@ -18,12 +18,30 @@
                 {% endif %}
             </p>
         </div>
-        <div class="dashboard-nav mt-4">
-            <h3>Acciones rápidas</h3>
-            <div class="btn-group d-flex gap-3">
-                <a href="{{ url_for('perfil') }}" class="btn btn-primary">Mi Perfil</a>
-                <a href="{{ url_for('mis_archivos') }}" class="btn btn-success">Mis Archivos</a>
-                <a href="{{ url_for('logout') }}" class="btn btn-secondary">Cerrar Sesión</a>
+    </div>
+</div>
+<div class="tarjeta-admin">
+    <div class="acciones-rapidas">
+        <h3>Acciones Rápidas</h3>
+    </div>
+    <div style="padding: 15px;">
+        <div class="grid-acciones">
+            <div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="{{ url_for('perfil') }}" class="enlace-accion">
+                        Mi perfil
+                    </a>
+                    <a href="{{ url_for('mis_archivos') }}" class="enlace-accion">
+                        Mis archivos
+                    </a>
+                </div>
+            </div>
+            <div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="{{ url_for('logout') }}" class="enlace-accion">
+                        Cerrar Sesión
+                    </a>
+                </div>
             </div>
         </div>
     </div>
