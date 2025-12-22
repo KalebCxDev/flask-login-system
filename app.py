@@ -311,11 +311,11 @@ def admin_eliminar_archivo(file_id):
     return redirect(url_for('admin_archivos'))
 
 # -- funciones adicionales -- #
-@app.route('/cambiar-tema',methods=['POST'])
+@app.route('/cambiar-tema', methods=['POST'])
 def cambiar_tema():
-    modo=request.form.get('modo')
-    resp=make_response(redirect(request.form.get('next',url_for('index'))))
-    resp.set_cookie('modo_claro','true' if modo=='claro' else 'false',max_age=30*24*60*60)  # cookie por 30 dias
+    modo = request.form.get('modo')
+    resp = make_response(redirect(request.form.get('next', url_for('index'))))
+    resp.set_cookie('modo_claro', 'true' if modo == 'claro' else 'false', max_age=30*24*60*60)  # cookie por 30 dias
     return resp
 
 @app.errorhandler(413)
