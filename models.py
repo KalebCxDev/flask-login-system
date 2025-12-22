@@ -1,37 +1,48 @@
+# -- Modelos de base de datos -- #
+# 01: imports y configuracion inicial
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
-db = SQLAlchemy()
+db = SQLAlchemy()  # instancia de SQLAlchemy para manejar la bd
+
+# -- modelo Usuario -- #
+# 01: almacena info de usuarios del sistema
 class Usuario(db.Model):
     __tablename__ = 'usuarios'
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
-    tipo = db.Column(db.String(20), default='postulante')
-    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)
-    verificado = db.Column(db.Boolean, default=False) 
+    email = db.Column(db.String(120), unique=True, nullable=False)  # email unico
+    password_hash = db.Column(db.String(255), nullable=False)  # contraseña hasheada
+    tipo = db.Column(db.String(20), default='postulante')  # postulante o admin
+    fecha_creacion = db.Column(db.DateTime, default=datetime.utcnow)  # cuando se creo
+    verificado = db.Column(db.Boolean, default=False)  # si verifico su correo
+    # relacion uno a uno con Postulante
     postulante = db.relationship('Postulante', backref='usuario', uselist=False, cascade="all, delete-orphan")
+    # relacion uno a muchos con Archivo
     archivos = db.relationship('Archivo', backref='usuario', cascade="all, delete-orphan")
 
+# -- modelo Postulante -- #
+# 01: info especifica de los postulantes
 class Postulante(db.Model):
     __tablename__ = 'postulantes'
     id = db.Column(db.Integer, primary_key=True)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)  # FK a usuario
     nombres = db.Column(db.String(100), nullable=False)
     apellidos = db.Column(db.String(100), nullable=False)
-    fecha_nacimiento = db.Column(db.Date, nullable=False)
-    dni = db.Column(db.String(20))
-    estado = db.Column(db.String(20), default='pendiente')
-    fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
+    fecha_nacimiento = db.Column(db.Date, nullable=False)  # fecha de nacimiento
+    dni = db.Column(db.String(20))  # documento de identidad
+    estado = db.Column(db.String(20), default='pendiente')  # pendiente, aprobado, rechazado
+    fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)  # cuando se registro
 
+# -- modelo Archivo -- #
+# 01: archivos subidos por los usuarios
 class Archivo(db.Model):
     __tablename__ = 'archivos'
     id = db.Column(db.Integer, primary_key=True)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
-    nombre_original = db.Column(db.String(255), nullable=False)
-    nombre_guardado = db.Column(db.String(255), nullable=False)
-    extension = db.Column(db.String(10), nullable=False)
-    mime_type = db.Column(db.String(100), nullable=False)
-    ruta = db.Column(db.String(255), nullable=False)
-    tamano = db.Column(db.Integer, nullable=False)
-    fecha_subida = db.Column(db.DateTime, default=datetime.utcnow)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)  # FK a usuario
+    nombre_original = db.Column(db.String(255), nullable=False)  # nombre original del archivo
+    nombre_guardado = db.Column(db.String(255), nullable=False)  # nombre unico en el sistema
+    extension = db.Column(db.String(10), nullable=False)  # extension del archivo
+    mime_type = db.Column(db.String(100), nullable=False)  # tipo MIME
+    ruta = db.Column(db.String(255), nullable=False)  # ruta local o URL cloudinary
+    tamano = db.Column(db.Integer, nullable=False)  # tamaño en bytes
+    fecha_subida = db.Column(db.DateTime, default=datetime.utcnow)  # cuando se subio

@@ -1,20 +1,21 @@
-#!/usr/bin/env python3
+# -- Script para crear usuario Admin -- #
 import sys
 import os
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))  # añade ruta actual al path
 
 from app import app, db
 from models import Usuario
 from werkzeug.security import generate_password_hash
 
 def crear_admin():
-    with app.app_context():
+    with app.app_context():  # contexto de la app para acceder a db
         print("\n" + "="*50)
         print("CREACIÓN DE USUARIO ADMINISTRADOR")
         print("="*50)
 
         email = input("Correo electrónico del administrador: ").strip().lower()
+        # verifica si el correo ya existe
         if Usuario.query.filter_by(email=email).first():
             print(f" El correo {email} ya está registrado")
             return
@@ -29,12 +30,14 @@ def crear_admin():
         if len(password) < 6:
             print("La contraseña debe tener al menos 6 caracteres")
             return
+        
         try:
+            # crea usuario admin
             admin = Usuario(
                 email=email,
                 password_hash=generate_password_hash(password),
                 tipo='admin',
-                verificado=True
+                verificado=True  # admin no necesita verificacion
             )
             
             db.session.add(admin)
@@ -49,5 +52,6 @@ def crear_admin():
         except Exception as e:
             db.session.rollback()
             print(f" error al crear administrador: {str(e)}")
+
 if __name__ == '__main__':
     crear_admin()
