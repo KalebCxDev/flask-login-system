@@ -1,7 +1,5 @@
 {% extends "base.html" %}
-
 {% block title %}Mi Perfil{% endblock %}
-
 {% block content %}
 <div class="profile-section">
     <h2>Mi Perfil</h2>
@@ -10,28 +8,30 @@
         <form method="post" action="{{ url_for('editar_perfil') }}" class="profile-form">
             <div class="form-group">
                 <label for="email">Correo (no editable):</label>
-                <input type="email" id="email" name="email" value="{{ usuario.email if usuario else '' }}" class="form-control" readonly disabled>
+                <input type="email" id="email" name="email" value="{{ usuario.email if usuario else '' }}"
+                    class="form-control" readonly disabled>
             </div>
-            
+
             <div class="form-group">
                 <label for="nombres">Nombres:</label>
-                <input type="text" id="nombres" name="nombres" value="{{ usuario.nombres if usuario else '' }}" class="form-control" required>
+                <input type="text" id="nombres" name="nombres" value="{{ usuario.nombres if usuario else '' }}"
+                    class="form-control" required>
             </div>
-            
+
             <div class="form-group">
                 <label for="apellidos">Apellidos:</label>
-                <input type="text" id="apellidos" name="apellidos" value="{{ usuario.apellidos if usuario else '' }}" class="form-control" required>
+                <input type="text" id="apellidos" name="apellidos" value="{{ usuario.apellidos if usuario else '' }}"
+                    class="form-control" required>
             </div>
-            
+
             <div class="form-group">
                 <label for="dni">DNI:</label>
-                <input type="text" id="dni" name="dni" value="{{ usuario.dni if usuario else '' }}" class="form-control" required maxlength="8">
+                <input type="text" id="dni" name="dni" value="{{ usuario.dni if usuario else '' }}" class="form-control"
+                    required maxlength="8">
             </div>
-            
             <button type="submit" class="btn btn-primary mt-3">Guardar cambios</button>
         </form>
     </div>
-
     <a href="{{ url_for('dashboard') }}" class="btn btn-secondary mt-4">
         ← Volver al Dashboard
     </a>
