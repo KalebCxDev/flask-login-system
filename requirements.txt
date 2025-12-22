@@ -8,13 +8,15 @@ Flask-Mail==0.10.0
 Flask-SQLAlchemy==3.1.1
 git-filter-repo==2.47.0
 greenlet==3.3.0
+gunicorn==23.0.0
 itsdangerous==2.2.0
 Jinja2==3.1.6
 MarkupSafe==3.0.3
+packaging==25.0
+psycopg2-binary==2.9.11
 python-dotenv==1.2.1
 six==1.17.0
 SQLAlchemy==2.0.45
 typing_extensions==4.15.0
 urllib3==2.6.2
 Werkzeug==3.1.4
-gunicorn==23.0.0
