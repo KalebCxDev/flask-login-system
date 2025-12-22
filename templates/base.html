@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %} Web de Adminsion {% endblock %}</title>
+    <title>{% block title %}Web de Admisión{% endblock %}</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
+
 <body>
+    {% if session.user_id %}
     <header>
-        <h1>Admision de postulantes IESTPO</h1>
+        <h1>Admisión de postulantes IESTPO</h1>
+        {% block nav %}
         <nav>
-            {% if session.user_id %}
             {% if session.tipo_usuario == 'admin' %}
             <a href="{{ url_for('admin_dashboard') }}">Panel Admin</a>
             <a href="{{ url_for('admin_usuarios') }}">Usuarios</a>
@@ -21,12 +24,10 @@
             <a href="{{ url_for('mis_archivos') }}">Mis Archivos</a>
             {% endif %}
             <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
-            {% else %}
-            <a href="{{ url_for('index') }}">Registro</a>
-            <a href="{{ url_for('login') }}">Login</a>
-            {% endif %}
         </nav>
+        {% endblock %}
     </header>
+    {% endif %}
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     <div class="flash-messages">
@@ -57,10 +58,11 @@
                 </p>
             </div>
             <div class="copyright-section">
-                <p>&copy; 2025 - Web de admision IESTPO</p>
+                <p>&copy; 2025 - Web de admisión IESTPO</p>
             </div>
         </div>
     </footer>
     <script src="{{ url_for('static', filename='js/validations.js') }}"></script>
 </body>
+
 </html>
